@@ -9,6 +9,8 @@ from data_structures.queue import Queue
 from algorithms.bubble_sort import bubble_sort
 from algorithms.insertion_sort import insertion_sort
 from data_structures.BST import BST
+from data_structures.hash_table import HashTable
+hash_table = HashTable()
 books = LinkedList()
 history = Stack()
 borrow_queue = Queue()
