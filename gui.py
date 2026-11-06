@@ -1,13 +1,15 @@
 import tkinter as tk
 from tkinter import messagebox
 
+from data_structures.stack import Stack
 from models.book import Book
 from data_structures.linked_list import LinkedList
 from algorithms.linear_search import linear_search
-
+from data_structures.queue import Queue 
 
 books = LinkedList()
-
+history = Stack()
+borrow_queue = Queue()
 
 class LibraryGUI:
     def __init__(self, root):
@@ -48,6 +50,10 @@ class LibraryGUI:
         button_frame = tk.Frame(root)
         button_frame.pack(pady=15)
 
+        tk.Label(form_frame, text="User").grid(row=4, column=0, padx=5, pady=5)
+        self.user_entry = tk.Entry(form_frame)
+        self.user_entry.grid(row=4, column=1, padx=5, pady=5)
+
         tk.Button(
             button_frame,
             text="Add Book",
@@ -75,9 +81,22 @@ class LibraryGUI:
             width=15,
             command=self.remove_book
         ).grid(row=0, column=3, padx=5)
-
+        tk.Button(
+            button_frame, 
+            text = 'Last Action',
+            width = 15,
+            command = self.show_last_action
+        ).grid(row = 0, column = 4, padx = 5)
         self.output = tk.Text(root, width=90, height=20)
         self.output.pack(pady=10)
+        tk.Button(
+            button_frame,
+            text='Process Queue',
+            width=15,
+            command=self.process_queue
+        ).grid(row=0, column=5, padx=5)
+
+        
 
     def add_book(self):
         try:
@@ -88,9 +107,9 @@ class LibraryGUI:
 
             book = Book(isbn, title, author, year)
             books.append(book)
-
+            history.push('Added: ', book)
             messagebox.showinfo("Success", "Book added successfully!")
-
+            
             self.clear_entries()
 
         except ValueError:
@@ -124,13 +143,13 @@ class LibraryGUI:
 
     def remove_book(self):
         isbn = self.isbn_entry.get()
-
+        history.push(f"Removed ISBN: {isbn}")
         current = books.head
 
         while current:
             if current.data.isbn == isbn:
                 books.remove(current.data)
-
+                history.push(f"Book removed: {current.data.title}")
                 messagebox.showinfo(
                     "Success",
                     f"Book with ISBN {isbn} removed"
@@ -150,8 +169,19 @@ class LibraryGUI:
         self.title_entry.delete(0, tk.END)
         self.author_entry.delete(0, tk.END)
         self.year_entry.delete(0, tk.END)
+    def show_last_action(self):
+        action = history.peek()
+        if action:
+            messagebox.showinfo("Last Action", action)
+        else:
+            messagebox.showinfo("Last Action", "No actions recorded.")
+    def process_queue(self):
+        if borrow_queue.is_empty():
+            messagebox.showinfo("Queue", "No users in the queue.")
+            return
 
-
+        user, isbn = borrow_queue.dequeue()
+        messagebox.showinfo("Queue", f"Processing user: {user} for book with ISBN: {isbn}")
 root = tk.Tk()
 app = LibraryGUI(root)
 root.mainloop()
