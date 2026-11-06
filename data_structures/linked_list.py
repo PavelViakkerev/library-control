@@ -47,3 +47,10 @@ class LinkedList:
                 return
 
             current = current.next
+    def to_list(self):
+        books = []
+        current = self.head
+        while current:
+            books.append(current.data)
+            current = current.next
+        return books

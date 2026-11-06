@@ -6,10 +6,14 @@ from models.book import Book
 from data_structures.linked_list import LinkedList
 from algorithms.linear_search import linear_search
 from data_structures.queue import Queue 
-
+from algorithms.bubble_sort import bubble_sort
+from algorithms.insertion_sort import insertion_sort
+from data_structures.BST import BST
 books = LinkedList()
 history = Stack()
 borrow_queue = Queue()
+bst = BST()
+book_list = books.to_list()
 
 class LibraryGUI:
     def __init__(self, root):
@@ -96,7 +100,18 @@ class LibraryGUI:
             command=self.process_queue
         ).grid(row=0, column=5, padx=5)
 
-        
+        tk.Button(button_frame, 
+                  text='Sort',
+                  width=15,
+                  command=self.sort_books).grid(row=0, column=6, padx=5)
+        tk.Button(button_frame,
+                  text='I. Sort',
+                  width=15,
+                  command=self.insertion_sort_books).grid(row=0, column=7, padx=5)
+        tk.Button(button_frame,
+                  text='bst search',
+                    width=15,
+                    command=self.bst_search).grid(row=0, column=8, padx=5)
 
     def add_book(self):
         try:
@@ -107,6 +122,7 @@ class LibraryGUI:
 
             book = Book(isbn, title, author, year)
             books.append(book)
+            bst.insert(book)
             history.push('Added: ', book)
             messagebox.showinfo("Success", "Book added successfully!")
             
@@ -182,6 +198,28 @@ class LibraryGUI:
 
         user, isbn = borrow_queue.dequeue()
         messagebox.showinfo("Queue", f"Processing user: {user} for book with ISBN: {isbn}")
+    def sort_books(self):
+        book_list = books.to_list()
+        sorted_books = bubble_sort(book_list)
+        self.output.delete(1.0, tk.END)
+        for book in sorted_books:
+            self.output.insert(tk.END, str(book) + "\n")
+    def insertion_sort_books(self):
+        book_list = books.to_list()
+        sorted_books = insertion_sort(book_list)
+        self.output.delete(1.0, tk.END)
+        for book in sorted_books:
+            self.output.insert(tk.END, str(book) + "\n")
+    def bst_search(self):
+        isbn = self.isbn_entry.get()
+        book = bst.search(isbn)
+        if book:
+            messagebox.showinfo("Book Found", str(book))
+        else:
+            messagebox.showwarning(
+                "Not Found",
+                f"No book found with ISBN {isbn}"
+            )
 root = tk.Tk()
 app = LibraryGUI(root)
 root.mainloop()
