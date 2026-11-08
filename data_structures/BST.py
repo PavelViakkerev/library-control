@@ -3,44 +3,53 @@ class BSTNode:
         self.book = book
         self.left = None
         self.right = None
+
+
 class BST:
+
+
     def __init__(self):
         self.root = None
 
     def insert(self, book):
+        new_node = BSTNode(book)
         if self.root is None:
-            self.root = BSTNode(book)
-        else:
-            self._insert(self.root, book)
-
-    def _insert(self, node, book):
-
-        if book.isbn < node.book.isbn:
-
-            if node.left is None:
-                node.left = BSTNode(book)
+            self.root = new_node
+            return
+        node = self.root
+        while True:
+            if book.isbn < node.book.isbn:
+                if node.left is None:
+                    node.left = new_node
+                    return
+                node = node.left
             else:
-                self._insert(node.left, book)
-
-        else:
-
-            if node.right is None:
-                node.right = BSTNode(book)
-            else:
-                self._insert(node.right, book)
+                if node.right is None:
+                    node.right = new_node
+                    return
+                node = node.right
 
     def search(self, isbn):
-        return self._search(self.root, isbn)
+        node = self.root
+        while node:
+            if isbn == node.book.isbn:
+                return node.book
+            node = node.left if isbn < node.book.isbn else node.right
+        return None
 
-    def _search(self, node, isbn):
+    def get_height(self):
+        return self._height(self.root)
 
-        if node is None:
-            return None
-
-        if node.book.isbn == isbn:
-            return node.book
-
-        if isbn < node.book.isbn:
-            return self._search(node.left, isbn)
-
-        return self._search(node.right, isbn)
+    def _height(self, node):
+        height = 0
+        level = [node] if node else []
+        while level:
+            height += 1
+            next_level = []
+            for n in level:
+                if n.left:
+                    next_level.append(n.left)
+                if n.right:
+                    next_level.append(n.right)
+            level = next_level
+        return height

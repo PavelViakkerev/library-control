@@ -1,4 +1,3 @@
-
 def linear_search(linked_list, isbn):
     current = linked_list.head
     while current:
