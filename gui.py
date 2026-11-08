@@ -114,6 +114,10 @@ class LibraryGUI:
                   text='bst search',
                     width=15,
                     command=self.bst_search).grid(row=0, column=8, padx=5)
+        tk.Button(button_frame,
+                  text='Hash search',
+                  width=15,
+                  command=self.hash_search).grid(row=0, column=9, padx=5)
 
     def add_book(self):
         try:
@@ -126,6 +130,7 @@ class LibraryGUI:
             books.append(book)
             bst.insert(book)
             history.push('Added: ', book)
+            hash_table.insert(isbn, book)
             messagebox.showinfo("Success", "Book added successfully!")
             
             self.clear_entries()
@@ -163,7 +168,7 @@ class LibraryGUI:
         isbn = self.isbn_entry.get()
         history.push(f"Removed ISBN: {isbn}")
         current = books.head
-
+        hash_table.remove(isbn) 
         while current:
             if current.data.isbn == isbn:
                 books.remove(current.data)
@@ -215,6 +220,16 @@ class LibraryGUI:
     def bst_search(self):
         isbn = self.isbn_entry.get()
         book = bst.search(isbn)
+        if book:
+            messagebox.showinfo("Book Found", str(book))
+        else:
+            messagebox.showwarning(
+                "Not Found",
+                f"No book found with ISBN {isbn}"
+            )
+    def hash_search(self):
+        isbn = self.isbn_entry.get()
+        book = hash_table.get(isbn)
         if book:
             messagebox.showinfo("Book Found", str(book))
         else:
